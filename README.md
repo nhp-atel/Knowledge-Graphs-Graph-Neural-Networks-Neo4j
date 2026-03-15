@@ -2,7 +2,7 @@
 
 A hands-on guide that walks you from "what is a graph?" all the way through building a graph database and training a neural network on it. Everything is grounded in a real-world logistics example, so the concepts stay concrete.
 
-## The Short Version
+## Introduction to graphs
 
 Most data we work with lives in tables -- rows and columns. But some data is better described by **connections**. Think about a shipping network: warehouses connect to drivers, drivers carry packages, packages travel along routes between cities. That web of connections is a **graph**, and there are powerful tools designed specifically to store, query, and learn from it.
 
