@@ -1,32 +1,59 @@
 # Knowledge Graphs, Graph Neural Networks, and Neo4j
 
-A comprehensive, hands-on guide that takes the reader from foundational graph theory through knowledge graph construction in Neo4j to implementing graph neural networks with PyTorch Geometric. The material is grounded in a realistic logistics and supply-chain domain, making the concepts concrete rather than abstract.
+A hands-on guide that walks you from "what is a graph?" all the way through building a graph database and training a neural network on it. Everything is grounded in a real-world logistics example, so the concepts stay concrete.
+
+## The Short Version
+
+Most data we work with lives in tables -- rows and columns. But some data is better described by **connections**. Think about a shipping network: warehouses connect to drivers, drivers carry packages, packages travel along routes between cities. That web of connections is a **graph**, and there are powerful tools designed specifically to store, query, and learn from it.
+
+This guide covers three of those tools and how they fit together:
+
+```
+  Knowledge Graph          Graph Database            Graph Neural Network
+  (the idea)               (the storage)             (the ML model)
+
+  "Warehouses connect      Store it in Neo4j,        Feed the graph into a
+   to drivers, drivers     query it with Cypher:     neural network that
+   carry packages,         MATCH (w)-[:EMPLOYS]->    learns from the shape
+   packages travel         (d) RETURN w, d           of the connections
+   along routes"                                     themselves
+```
+
+If you have worked with SQL databases or trained a neural network on tabular data, you already have enough background. This guide handles the rest.
 
 ## Background and Motivation
 
-This guide grew out of an academic research project I conducted from May through August 2024. The original work investigated the geometry of loss functions in graph neural networks -- specifically, whether the mode connectivity phenomena observed in deep neural networks also hold when the underlying data is graph-structured rather than Euclidean. The research drew on the Fast Geometric Ensembling (FGE) framework proposed by Garipov et al., which demonstrated that the optima of complex loss surfaces in DNNs are connected by simple, low-loss curves, and that traversing these curves enables the construction of high-performing ensembles at the computational cost of training a single model. My contribution was to extend this line of inquiry from standard deep neural networks to GNNs, using the AIDS molecular graph dataset as the experimental testbed.
+This guide grew out of an academic research project I conducted from May through August 2024. The research question was straightforward: when you train a neural network, the optimization process finds a set of parameters (a "solution") that performs well. It turns out that different training runs can find different solutions, and recent work by Garipov et al. showed that in standard deep neural networks, these solutions are connected by simple, smooth paths -- you can walk from one solution to another without the model's performance collapsing. My project asked whether the same property holds when the neural network operates on graph-structured data (molecular graphs from the AIDS dataset) instead of the usual images or tabular inputs.
 
-### What I learned the hard way
+That research required me to work at the intersection of two fields: **knowledge graphs** (how you structure and store connected data) and **graph neural networks** (how you train ML models on that data). What I found is that these two fields have grown up in different communities, use different vocabulary, and are taught in almost entirely separate resources.
 
-The most persistent difficulty I encountered during that research was not any single technical obstacle but rather the disconnect between the theory of knowledge graphs and the theory of graph neural networks. These two fields have developed largely in parallel. Knowledge graph research originates in the semantic web and database communities, where the emphasis is on ontological modeling, entity resolution, and structured query languages such as SPARQL and Cypher. GNN research, by contrast, originates in the machine learning and signal processing communities, where the emphasis is on differentiable message-passing, spectral graph theory, and representation learning. The literature, the tooling, and even the vocabulary differ substantially between the two.
+### The gap I kept running into
 
-In practice, this meant that learning one did not automatically illuminate the other. I could build a knowledge graph in Neo4j and query it fluently with Cypher, but translating that graph into a format suitable for GNN training -- encoding heterogeneous node types as feature vectors, converting property-graph semantics into a homogeneous adjacency structure, deciding which graph properties to preserve and which to abstract away -- required bridging a gap that no single resource I found at the time addressed clearly. Most tutorials on GNNs used benchmark datasets like Cora or CiteSeer that arrive pre-processed and ready to feed into PyTorch Geometric. Most tutorials on knowledge graphs stopped at querying and visualization. The messy, essential work of moving data from one paradigm to the other was left as an exercise for the reader.
+Learning knowledge graphs and learning GNNs felt like studying two different subjects that happen to share the word "graph."
 
-The theoretical side posed its own challenges. GNN papers assume fluency in spectral graph theory, message-passing formalisms, and permutation equivariance -- concepts that are not part of a standard machine learning curriculum. Reading the foundational GCN paper by Kipf and Welling, the GraphSAGE paper by Hamilton et al., or the GAT paper by Velickovic et al. requires comfort with normalized adjacency operators, neighborhood aggregation proofs, and attention mechanisms adapted to irregular topologies. Without a guided path through these ideas, the learning curve is steep and the risk of superficial understanding is high.
+On the knowledge graph side, tutorials teach you how to model entities and relationships, store them in a database like Neo4j, and write queries to retrieve information. They stop there. The data sits in the database, ready to be queried, but not ready for machine learning.
 
-### What this guide provides
+On the GNN side, tutorials hand you a pre-packaged dataset that is already formatted as numerical arrays -- node features, edge lists, labels -- and show you how to train a model on it. They skip the question of where that data came from or how a real-world graph database gets converted into something a neural network can consume.
 
-This notebook is the resource I wished I had when I started. It treats knowledge graphs and graph neural networks as parts of a single pipeline rather than as separate disciplines. Section 5 builds a realistic knowledge graph in Neo4j. Section 8 converts that same graph into PyTorch Geometric tensors and trains GNN models on it. The transition between the two is explicit, documented, and reproducible -- no hand-waving, no pre-processed dataset that hides the complexity.
+The critical middle step -- taking a knowledge graph out of Neo4j and turning it into the numerical format a GNN expects -- was the part I struggled with most, and the part that no single resource explained clearly. That meant figuring out questions like:
 
-The theoretical sections (particularly Sections 7 and 8) walk through GCN, GraphSAGE, and GAT at the level of their mathematical formulations, but they do so alongside concrete logistics examples and implementation code. The goal is not to replace the original papers but to make them accessible -- to give you enough grounding that when you do read Kipf and Welling or Hamilton et al., the notation is familiar and the design choices make sense.
+- How do you turn a node that has a label like "warehouse" and properties like "capacity: 5000" into a row of numbers?
+- If your graph has different types of nodes (warehouses, packages, drivers), how do you represent that in a single feature matrix?
+- Which relationships from the knowledge graph become edges in the GNN, and which become features?
 
-If you are a graduate student beginning research in this area, or a practitioner who needs to build a GNN pipeline on top of an existing knowledge graph, this guide is designed to save you the months of disjointed reading and trial-and-error that I went through. The field is moving quickly, but the fundamentals covered here -- graph data modeling, message-passing theory, and the practical bridge between knowledge representation and learned embeddings -- are stable and will remain relevant regardless of which specific architecture is state-of-the-art when you read this.
+### What this guide does differently
+
+This notebook treats the full pipeline as one continuous workflow. Section 5 builds a logistics knowledge graph in Neo4j from scratch. Section 8 takes that same graph, converts it into numerical tensors, and trains GNN models on it. Every step in between is shown explicitly -- no pre-processed datasets, no skipped steps.
+
+The theory sections explain GNN architectures (GCN, GraphSAGE, GAT) with their mathematical formulations, but they pair every equation with a plain-language explanation of what it does in the context of the logistics network. The goal is to give you enough grounding that when you encounter these concepts in research papers, they feel familiar rather than foreign.
+
+If you are starting out in this area, this guide is designed to save you the months of scattered reading and dead ends that I went through.
 
 ## Who This Guide Is For
 
-This guide is intended for graduate students, early-career data scientists, and software engineers who are entering the field of graph-based machine learning for the first time. It assumes working knowledge of Python and a basic familiarity with machine learning concepts (loss functions, gradient descent, train/test splits), but it does not assume any prior experience with graph databases, knowledge graphs, or GNNs.
+This guide is written for graduate students, early-career data scientists, and software engineers who are new to graph-based machine learning. It assumes you can write Python and that you have a basic understanding of how neural networks work (what a loss function is, what training means), but it does not assume any prior experience with graph databases, knowledge graphs, or GNNs.
 
-If you can write a Python class and understand what a neural network does at a high level, you have enough background to work through this notebook from start to finish.
+If you can write a Python class and understand what a neural network does at a high level, you have enough background to work through this notebook.
 
 ## What This Guide Covers
 
@@ -34,14 +61,14 @@ The notebook is organized into ten sections. Each section builds on the previous
 
 | Section | Topic | What You Will Learn |
 |---------|-------|---------------------|
-| 1 | Introduction and Motivation | Why graph-structured data matters and where knowledge graphs are used in industry |
-| 2 | Knowledge Graph Theory | Ontologies, RDF, property graphs, and the formal underpinnings of knowledge representation |
-| 3 | Graph Theory Fundamentals | Adjacency matrices, degree distributions, graph types, and hands-on work with NetworkX |
-| 4 | Neo4j Setup and Fundamentals | Installing Neo4j, writing Cypher queries, and performing CRUD operations on a graph database |
-| 5 | Logistics Knowledge Graph | Designing a schema, generating realistic logistics data, and loading it into Neo4j with parameterized queries |
-| 6 | Graph Analytics | Shortest path (Dijkstra), PageRank, community detection, and centrality measures applied to the logistics graph |
-| 7 | GNN Theory | The message-passing paradigm, GCN, GraphSAGE, GAT architectures, and the over-smoothing problem |
-| 8 | GNN Implementation | Converting a knowledge graph to PyTorch Geometric format, training a GCN for node classification, link prediction, and embedding visualization |
+| 1 | Introduction and Motivation | Why some data is better represented as a graph than a table, and where this matters in industry |
+| 2 | Knowledge Graph Theory | How to formally describe entities and their relationships -- the different standards and formats used |
+| 3 | Graph Theory Fundamentals | The math behind graphs: how to represent them as matrices, measure their properties, and work with them in Python (NetworkX) |
+| 4 | Neo4j Setup and Fundamentals | Installing Neo4j (a graph database), writing queries in its language (Cypher), and creating/reading/updating/deleting data |
+| 5 | UPS Logistics Knowledge Graph | Building a realistic shipping network from scratch -- warehouses, drivers, packages, and routes -- and loading it into Neo4j |
+| 6 | Graph Analytics | Algorithms that answer questions like "what is the shortest route?" and "which warehouse is the most critical hub?" |
+| 7 | GNN Theory | How graph neural networks work -- each node learns by collecting information from its neighbors, layer by layer |
+| 8 | GNN Implementation | The full pipeline: taking the logistics graph from Neo4j, converting it to numerical format, and training a neural network on it |
 | 9 | Decision Framework | When to use a knowledge graph, when to use a GNN, and when to combine the two |
 | 10 | Action Plan and Portfolio Projects | A 30/60/90-day learning roadmap, project ideas, paper reading list, and interview preparation guidance |
 
@@ -103,16 +130,30 @@ If the GDS plugin is not available, the notebook will still function. All graph 
 
 **If you are preparing for interviews or building a portfolio:** Section 10 contains a structured learning roadmap, portfolio project ideas with architecture diagrams, a curated paper reading list, and specific guidance on how to present graph-based work to technical audiences.
 
+## Which Notebook Should I Start With?
+
+This repository contains two notebooks. They cover overlapping material but serve different purposes.
+
+| Notebook | What It Uses | What It Is For |
+|----------|-------------|----------------|
+| `Knowledge_Graph_GNN_Neo4j_Guide.ipynb` | NetworkX, Neo4j, PyTorch, PyTorch Geometric | The full guide: theory, tools, and implementation using standard libraries |
+| `GNN_From_Scratch.ipynb` | NumPy only (no PyTorch, no PyG) | Shows how GNNs work under the hood by implementing every operation by hand |
+
+**Start with the main guide.** It covers the theory, walks through Neo4j and Cypher, and builds up to GNN implementation using the tools you would actually use in production.
+
+**Then read the from-scratch notebook** when you want to understand what those tools are doing internally. It implements the same GCN architecture, the same training loop, the same link prediction pipeline -- but every weight matrix, every gradient, every optimizer update is written out explicitly in NumPy. There is no `loss.backward()`, no `GCNConv`. You see the raw matrix multiplications that make a graph neural network work.
+
 ## Repository Structure
 
 ```
 .
-├── Knowledge_Graph_GNN_Neo4j_Guide.ipynb   # The complete guide
+├── Knowledge_Graph_GNN_Neo4j_Guide.ipynb   # The complete guide (theory + standard libraries)
+├── GNN_From_Scratch.ipynb                  # GNN from scratch (NumPy only, no PyTorch)
 ├── README.md                                # This file
 └── .gitignore
 ```
 
-## Running the Notebook
+## Running the Notebooks
 
 1. Clone this repository:
 
@@ -144,15 +185,17 @@ If the GDS plugin is not available, the notebook will still function. All graph 
 
 ## Key Concepts at a Glance
 
-For readers who want a quick orientation before diving into the notebook:
+If these terms are new to you, here is what they mean in plain language:
 
-- A **knowledge graph** represents real-world entities as nodes and their relationships as edges, with properties attached to both. Unlike relational tables, it makes the connections between data explicit and queryable.
+- A **graph** is a collection of things (called **nodes**) connected by relationships (called **edges**). A social network is a graph: people are nodes, friendships are edges. A shipping network is a graph: warehouses and packages are nodes, routes and deliveries are edges.
 
-- **Cypher** is Neo4j's query language. It uses an ASCII-art pattern syntax (e.g., `(a)-[:SHIPS_TO]->(b)`) that visually mirrors the graph structure you are querying.
+- A **knowledge graph** is a graph where the nodes and edges carry meaningful labels and properties. It is not just "A connects to B" -- it is "Warehouse-Seattle SHIPS_TO Warehouse-Chicago, distance: 1750 miles." It is a way of storing real-world knowledge so that both humans and machines can query it.
 
-- **Graph Neural Networks** extend deep learning to irregular, non-Euclidean data. They work by iteratively passing messages between neighboring nodes, allowing each node to build a representation informed by its local graph structure.
+- **Neo4j** is a database built specifically for storing and querying graphs. Instead of SQL, it uses a language called **Cypher** that looks like ASCII art: `(seattle)-[:SHIPS_TO]->(chicago)`. You draw the pattern you are looking for, and Neo4j finds it in the data.
 
-- **PyTorch Geometric** is the library used in this guide for GNN implementation. It provides efficient implementations of GCN, GraphSAGE, GAT, and many other architectures.
+- A **Graph Neural Network (GNN)** is a neural network designed to learn from graph-structured data. The core idea is simple: each node builds its understanding by collecting information from its neighbors. After several rounds of this, every node has learned something about the broader network around it -- and you can use that learned representation for predictions.
+
+- **PyTorch Geometric** is the Python library used in this guide to build and train GNNs. It is to graph neural networks what PyTorch is to standard neural networks -- it handles the data formatting, the model layers, and the training loop.
 
 ## License
 
