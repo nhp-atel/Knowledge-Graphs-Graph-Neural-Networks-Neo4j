@@ -38,7 +38,7 @@ The notebook is organized into ten sections. Each section builds on the previous
 | 2 | Knowledge Graph Theory | Ontologies, RDF, property graphs, and the formal underpinnings of knowledge representation |
 | 3 | Graph Theory Fundamentals | Adjacency matrices, degree distributions, graph types, and hands-on work with NetworkX |
 | 4 | Neo4j Setup and Fundamentals | Installing Neo4j, writing Cypher queries, and performing CRUD operations on a graph database |
-| 5 | UPS Logistics Knowledge Graph | Designing a schema, generating realistic logistics data, and loading it into Neo4j with parameterized queries |
+| 5 | Logistics Knowledge Graph | Designing a schema, generating realistic logistics data, and loading it into Neo4j with parameterized queries |
 | 6 | Graph Analytics | Shortest path (Dijkstra), PageRank, community detection, and centrality measures applied to the logistics graph |
 | 7 | GNN Theory | The message-passing paradigm, GCN, GraphSAGE, GAT architectures, and the over-smoothing problem |
 | 8 | GNN Implementation | Converting a knowledge graph to PyTorch Geometric format, training a GCN for node classification, link prediction, and embedding visualization |
