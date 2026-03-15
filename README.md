@@ -1,0 +1,143 @@
+# Knowledge Graphs, Graph Neural Networks, and Neo4j
+
+A comprehensive, hands-on guide that takes the reader from foundational graph theory through knowledge graph construction in Neo4j to implementing graph neural networks with PyTorch Geometric. The material is grounded in a realistic logistics and supply-chain domain, making the concepts concrete rather than abstract.
+
+## Who This Guide Is For
+
+This guide is intended for graduate students, early-career data scientists, and software engineers who are entering the field of graph-based machine learning for the first time. It assumes working knowledge of Python and a basic familiarity with machine learning concepts (loss functions, gradient descent, train/test splits), but it does not assume any prior experience with graph databases, knowledge graphs, or GNNs.
+
+If you can write a Python class and understand what a neural network does at a high level, you have enough background to work through this notebook from start to finish.
+
+## What This Guide Covers
+
+The notebook is organized into ten sections. Each section builds on the previous one, so it is best read sequentially on a first pass. After that, individual sections can serve as standalone references.
+
+| Section | Topic | What You Will Learn |
+|---------|-------|---------------------|
+| 1 | Introduction and Motivation | Why graph-structured data matters and where knowledge graphs are used in industry |
+| 2 | Knowledge Graph Theory | Ontologies, RDF, property graphs, and the formal underpinnings of knowledge representation |
+| 3 | Graph Theory Fundamentals | Adjacency matrices, degree distributions, graph types, and hands-on work with NetworkX |
+| 4 | Neo4j Setup and Fundamentals | Installing Neo4j, writing Cypher queries, and performing CRUD operations on a graph database |
+| 5 | UPS Logistics Knowledge Graph | Designing a schema, generating realistic logistics data, and loading it into Neo4j with parameterized queries |
+| 6 | Graph Analytics | Shortest path (Dijkstra), PageRank, community detection, and centrality measures applied to the logistics graph |
+| 7 | GNN Theory | The message-passing paradigm, GCN, GraphSAGE, GAT architectures, and the over-smoothing problem |
+| 8 | GNN Implementation | Converting a knowledge graph to PyTorch Geometric format, training a GCN for node classification, link prediction, and embedding visualization |
+| 9 | Decision Framework | When to use a knowledge graph, when to use a GNN, and when to combine the two |
+| 10 | Action Plan and Portfolio Projects | A 30/60/90-day learning roadmap, project ideas, paper reading list, and interview preparation guidance |
+
+## Prerequisites
+
+### Software
+
+- **Python 3.9 or later**
+- **Jupyter Notebook or JupyterLab** for running the `.ipynb` file
+- **Neo4j Desktop** (free, available at [neo4j.com/download](https://neo4j.com/download/)) with the **Graph Data Science (GDS) plugin** installed. Section 4 of the notebook walks through installation in detail.
+
+### Python Libraries
+
+The notebook installs most dependencies inline, but the core libraries used are:
+
+| Library | Purpose |
+|---------|---------|
+| `networkx` | Graph construction and classical graph algorithms |
+| `neo4j` | Python driver for connecting to a Neo4j database |
+| `torch` | PyTorch, the deep learning framework |
+| `torch_geometric` | PyTorch Geometric, the GNN library |
+| `matplotlib`, `seaborn` | Visualization |
+| `scikit-learn` | t-SNE and evaluation metrics |
+| `numpy`, `pandas` | Numerical computation and data manipulation |
+
+You can install the non-PyG dependencies with:
+
+```bash
+pip install networkx neo4j matplotlib seaborn scikit-learn numpy pandas
+```
+
+PyTorch and PyTorch Geometric have platform-specific installation steps. The notebook includes cells that handle this, but consult the [PyG installation guide](https://pytorch-geometric.readthedocs.io/en/latest/install/installation.html) if you encounter issues.
+
+### Installing the Neo4j GDS Plugin
+
+Several cells in Section 6 use Neo4j's Graph Data Science procedures (`gds.graph.project`, `gds.shortestPath.dijkstra.stream`, etc.). These are not included in a default Neo4j installation. To install the plugin:
+
+1. Open Neo4j Desktop.
+2. Stop your database if it is currently running.
+3. Click on your database, then open the **Plugins** tab in the right panel.
+4. Locate **Graph Data Science Library** and click **Install**.
+5. Restart the database.
+
+You can verify the installation succeeded by running the following Cypher query in the Neo4j Browser:
+
+```cypher
+RETURN gds.version()
+```
+
+If the GDS plugin is not available, the notebook will still function. All graph analytics are implemented in both Neo4j/Cypher and pure NetworkX, so you can follow along with NetworkX alone.
+
+## How to Navigate This Guide
+
+**If you are completely new to graphs:** Start at Section 1 and work through each section in order. The early sections establish vocabulary and intuition that the later sections depend on. Expect the full notebook to take several sessions to complete.
+
+**If you are comfortable with graph theory but new to Neo4j:** Begin at Section 4. Sections 4 and 5 form a self-contained tutorial on building and querying a knowledge graph in Neo4j.
+
+**If you already use Neo4j and want to learn GNNs:** Skip to Section 7 for the theory and Section 8 for the implementation. Section 8 shows how to convert a knowledge graph into PyTorch Geometric format, which is the bridge between the two worlds.
+
+**If you are preparing for interviews or building a portfolio:** Section 10 contains a structured learning roadmap, portfolio project ideas with architecture diagrams, a curated paper reading list, and specific guidance on how to present graph-based work to technical audiences.
+
+## Repository Structure
+
+```
+.
+├── Knowledge_Graph_GNN_Neo4j_Guide.ipynb   # The complete guide
+├── README.md                                # This file
+└── .gitignore
+```
+
+## Running the Notebook
+
+1. Clone this repository:
+
+   ```bash
+   git clone https://github.com/nhp-atel/Knowledge-Graphs-Graph-Neural-Networks-Neo4j.git
+   cd Knowledge-Graphs-Graph-Neural-Networks-Neo4j
+   ```
+
+2. Create and activate a virtual environment (recommended):
+
+   ```bash
+   python -m venv venv
+   source venv/bin/activate
+   ```
+
+3. Install dependencies:
+
+   ```bash
+   pip install jupyter networkx neo4j matplotlib seaborn scikit-learn numpy pandas
+   ```
+
+4. Launch Jupyter:
+
+   ```bash
+   jupyter notebook Knowledge_Graph_GNN_Neo4j_Guide.ipynb
+   ```
+
+5. For cells that connect to Neo4j, make sure your Neo4j instance is running and update the connection credentials in the notebook if they differ from the defaults (`bolt://localhost:7687`, user `neo4j`).
+
+## Key Concepts at a Glance
+
+For readers who want a quick orientation before diving into the notebook:
+
+- A **knowledge graph** represents real-world entities as nodes and their relationships as edges, with properties attached to both. Unlike relational tables, it makes the connections between data explicit and queryable.
+
+- **Cypher** is Neo4j's query language. It uses an ASCII-art pattern syntax (e.g., `(a)-[:SHIPS_TO]->(b)`) that visually mirrors the graph structure you are querying.
+
+- **Graph Neural Networks** extend deep learning to irregular, non-Euclidean data. They work by iteratively passing messages between neighboring nodes, allowing each node to build a representation informed by its local graph structure.
+
+- **PyTorch Geometric** is the library used in this guide for GNN implementation. It provides efficient implementations of GCN, GraphSAGE, GAT, and many other architectures.
+
+## License
+
+This project is made available for educational purposes.
+
+## Author
+
+Nimesh Patel
