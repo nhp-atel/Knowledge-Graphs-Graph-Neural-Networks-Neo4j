@@ -14,23 +14,34 @@ This guide covers three of those tools and how they fit together. But before we 
 
 ### See It in Action: A GNN Predicting New Friendships
 
-Imagine 8 people in a social network. Each person has interests (music, sports, cooking, gaming), and some of them are already friends. The question is: **who should we recommend as new friends?**
+<p align="center">
+  <img src="images/gnn_simulation.gif" alt="GNN simulation: predicting new friendships step by step" width="800">
+</p>
 
+The animation above shows the full process: 8 people in a social network, each with their own interests. The GNN runs two rounds of **message passing** -- each person collects information from their friends, then from their friends' friends. By the end, people who are not yet connected but end up with similar representations are recommended as new friends. The model discovers that mutual friends and overlapping interests predict compatibility, without ever being told that rule.
+
+Below are the individual steps for reference:
+
+<details>
+<summary>Step 1: Build the friend network</summary>
 <p align="center">
   <img src="images/sim_step1_network.png" alt="Step 1: Friend network with interests" width="800">
 </p>
+</details>
 
-A GNN answers this through **message passing**. In each round, every person collects information from their friends and mixes it with their own. After one round, you know what your direct friends like. After two rounds, you also know what your friends' friends like. Watch how Alice's representation changes -- she starts with just her own interests, but after two layers she carries information from across the network.
-
+<details>
+<summary>Step 2: Message passing -- watch information flow</summary>
 <p align="center">
   <img src="images/sim_step2_message_passing.png" alt="Step 2: Message passing across two layers" width="800">
 </p>
+</details>
 
-Now the key insight: after message passing, people who end up with **similar representations** are likely to get along -- even if they have never met. We measure similarity with a dot product and rank every non-friend pair. The GNN finds that Eve and Hank, Alice and Diana, and Diana and Frank are the top matches -- all have mutual friends and overlapping interests, but the model discovered this pattern entirely on its own.
-
+<details>
+<summary>Step 3: Predict new friendships</summary>
 <p align="center">
   <img src="images/sim_step3_predictions.png" alt="Step 3: Predicted new friendships" width="800">
 </p>
+</details>
 
 That is a Graph Neural Network in three steps: represent people as numbers, let information flow through the network, and measure who ends up similar. The rest of this guide applies the same idea to logistics networks, knowledge graphs, and real-world ML pipelines.
 
