@@ -6,6 +6,10 @@ A hands-on guide that walks you from "what is a graph?" all the way through buil
 
 Most data we work with lives in tables -- rows and columns. But some data is better described by **connections**. Think about a shipping network: warehouses connect to drivers, drivers carry packages, packages travel along routes between cities. That web of connections is a **graph**, and there are powerful tools designed specifically to store, query, and learn from it.
 
+<p align="center">
+  <img src="images/knowledge_graph.png" alt="Logistics Knowledge Graph" width="700">
+</p>
+
 This guide covers three of those tools and how they fit together:
 
 ```
@@ -26,6 +30,10 @@ If you have worked with SQL databases or trained a neural network on tabular dat
 This guide grew out of an academic research project I conducted from May through August 2024. The research question was straightforward: when you train a neural network, the optimization process finds a set of parameters (a "solution") that performs well. It turns out that different training runs can find different solutions, and recent work by Garipov et al. showed that in standard deep neural networks, these solutions are connected by simple, smooth paths -- you can walk from one solution to another without the model's performance collapsing. My project asked whether the same property holds when the neural network operates on graph-structured data (molecular graphs from the AIDS dataset) instead of the usual images or tabular inputs.
 
 That research required me to work at the intersection of two fields: **knowledge graphs** (how you structure and store connected data) and **graph neural networks** (how you train ML models on that data). What I found is that these two fields have grown up in different communities, use different vocabulary, and are taught in almost entirely separate resources.
+
+<p align="center">
+  <img src="images/loss_surface_bezier.png" alt="Loss surface with optima connected by a low-loss Bezier curve" width="700">
+</p>
 
 ### The gap I kept running into
 
