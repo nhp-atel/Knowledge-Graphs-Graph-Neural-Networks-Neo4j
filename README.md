@@ -10,18 +10,29 @@ Most data we work with lives in tables -- rows and columns. But some data is bet
   <img src="images/knowledge_graph.png" alt="Logistics Knowledge Graph" width="700">
 </p>
 
-This guide covers three of those tools and how they fit together:
+This guide covers three of those tools and how they fit together. But before we explain them, let us watch a GNN solve a real problem.
 
-```
-  Knowledge Graph          Graph Database            Graph Neural Network
-  (the idea)               (the storage)             (the ML model)
+### See It in Action: A GNN Predicting New Friendships
 
-  "Warehouses connect      Store it in Neo4j,        Feed the graph into a
-   to drivers, drivers     query it with Cypher:     neural network that
-   carry packages,         MATCH (w)-[:EMPLOYS]->    learns from the shape
-   packages travel         (d) RETURN w, d           of the connections
-   along routes"                                     themselves
-```
+Imagine 8 people in a social network. Each person has interests (music, sports, cooking, gaming), and some of them are already friends. The question is: **who should we recommend as new friends?**
+
+<p align="center">
+  <img src="images/sim_step1_network.png" alt="Step 1: Friend network with interests" width="800">
+</p>
+
+A GNN answers this through **message passing**. In each round, every person collects information from their friends and mixes it with their own. After one round, you know what your direct friends like. After two rounds, you also know what your friends' friends like. Watch how Alice's representation changes -- she starts with just her own interests, but after two layers she carries information from across the network.
+
+<p align="center">
+  <img src="images/sim_step2_message_passing.png" alt="Step 2: Message passing across two layers" width="800">
+</p>
+
+Now the key insight: after message passing, people who end up with **similar representations** are likely to get along -- even if they have never met. We measure similarity with a dot product and rank every non-friend pair. The GNN finds that Eve and Hank, Alice and Diana, and Diana and Frank are the top matches -- all have mutual friends and overlapping interests, but the model discovered this pattern entirely on its own.
+
+<p align="center">
+  <img src="images/sim_step3_predictions.png" alt="Step 3: Predicted new friendships" width="800">
+</p>
+
+That is a Graph Neural Network in three steps: represent people as numbers, let information flow through the network, and measure who ends up similar. The rest of this guide applies the same idea to logistics networks, knowledge graphs, and real-world ML pipelines.
 
 If you have worked with SQL databases or trained a neural network on tabular data, you already have enough background. This guide handles the rest.
 
