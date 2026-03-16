@@ -130,7 +130,7 @@ If the GDS plugin is not available, the notebook will still function. All graph 
 
 ## How to Navigate This Guide
 
-**If you are completely new to graphs:** Start at Section 1 and work through each section in order. The early sections establish vocabulary and intuition that the later sections depend on. Expect the full notebook to take several sessions to complete.
+**If you are completely new to graphs:** Start at Section 1 and work through each section in order. The early sections establish vocabulary and intuition that the later sections depend on. Expect the full notebook to take several sessions to complete, I would suggest that you start from the GNN_From_Scratch notebook. It will teach you the basics and once you have enough understanding move on to the next.
 
 **If you are comfortable with graph theory but new to Neo4j:** Begin at Section 4. Sections 4 and 5 form a self-contained tutorial on building and querying a knowledge graph in Neo4j.
 
