@@ -33,8 +33,9 @@ All files are Matrix Market (.mtx) format, loaded with `scipy.io.mmread`.
 - Source: SNAP Stanford
 
 **Code cells:**
+- Install & imports cell: all imports at the top (`scipy`, `networkx`, `neo4j`, `torch`, `torch_geometric`, `matplotlib`, `numpy`, `pandas`, `sklearn`). Set random seeds (`np.random.seed(42)`, `torch.manual_seed(42)`, `random.seed(42)`) for reproducibility.
 - Load `com-Amazon.mtx` via `scipy.io.mmread` → sparse matrix → NetworkX graph
-- Load `com-Amazon_nodeid.mtx` to show original Amazon product ID mapping
+- Load `com-Amazon_nodeid.mtx` to show original Amazon product ID mapping. Note in markdown: these are opaque numeric IDs (not human-readable product names) — the purpose is to show that a mapping exists back to the original Amazon catalog.
 - Basic stats: node count, edge count, density, connected components
 - Degree distribution: histogram + summary stats (min, max, mean, median degree)
 - Visualize a small neighborhood: pick one node, plot its 2-hop subgraph with NetworkX spring layout
@@ -43,11 +44,12 @@ All files are Matrix Market (.mtx) format, loaded with `scipy.io.mmread`.
 
 **Purpose:** Extract a laptop-friendly subset while preserving graph structure.
 
-**Method:** BFS from a random seed node, expand until ~10,000 nodes are reached, take the induced subgraph. This preserves local community structure (unlike random node sampling, which fragments the graph).
+**Method:** BFS from a fixed seed node (deterministic, reproducible), expand until ~10,000 nodes are reached, take the induced subgraph. This preserves local community structure (unlike random node sampling, which fragments the graph).
 
 **Code cells:**
-- Subsample function using BFS → ~10K node connected subgraph
-- Reindex nodes to 0..N-1 (required for PyG)
+- Subsample function using BFS from a fixed seed node → ~10K node connected subgraph
+- Build a mapping from original node IDs to new 0..N-1 indices (required for PyG)
+- Filter the community matrix (`Communities_all.mtx`) to only the sampled nodes, reindex rows to match the new node indices. This must happen here, before features are built in Section 4.
 - Print comparison: subsampled vs original (nodes, edges, density)
 
 ### Section 3: Neo4j Ingestion & Querying (5–6 cells)
@@ -61,7 +63,7 @@ All files are Matrix Market (.mtx) format, loaded with `scipy.io.mmread`.
 **Code cells:**
 - Install `neo4j` Python driver
 - Connect to Neo4j, verify connection
-- Clear existing data, batch-insert nodes as `(:Product {product_id, node_idx})` and edges as `[:CO_PURCHASED]`
+- Clear existing data, batch-insert using `UNWIND $batch` Cypher pattern (not per-node inserts — that would be too slow for 10K+ nodes). Insert nodes as `(:Product {product_id, node_idx})` and edges as `[:CO_PURCHASED]`
 - Print confirmation (nodes/edges inserted)
 - Cypher exploration queries:
   - Count nodes and edges (verify ingestion)
@@ -78,7 +80,11 @@ All files are Matrix Market (.mtx) format, loaded with `scipy.io.mmread`.
 
 **Code cells:**
 - Query Neo4j via Cypher to pull all nodes and edges
-- Engineer node features: degree, clustering coefficient, community membership vector (from top-5000 communities file)
+- Engineer node features from graph structure (since the dataset has no product attributes):
+  - **Degree** (normalized)
+  - **Clustering coefficient**
+  - **Number of communities** the node belongs to (scalar, from `Communities_all.mtx`)
+  - **Community indicator vector**: keep only communities that have 2+ members in the subsample, drop the rest. This yields a compact binary vector (~20–50 dims depending on subsample) rather than a sparse 75K-dim vector. Explain in markdown why this filtering matters.
 - Construct PyG `Data` object: `x` (feature matrix), `edge_index` (COO format)
 - Print the PyG Data object to show final shape
 
@@ -90,7 +96,7 @@ All files are Matrix Market (.mtx) format, loaded with `scipy.io.mmread`.
 - Explain the setup: hide some real edges (positive test), generate fake edges (negative samples), train the GNN to tell them apart
 
 **Code cells:**
-- Use PyG's `RandomLinkSplit` with 85/5/10 train/val/test split
+- Use PyG's `RandomLinkSplit` with 80/10/10 train/val/test split
 - Print split stats: edges per set, negative samples
 - Sanity check: confirm no test edges leak into training graph
 
@@ -118,8 +124,8 @@ All files are Matrix Market (.mtx) format, loaded with `scipy.io.mmread`.
 **Purpose:** Show what the model learned and provide a visual payoff.
 
 **Code cells:**
-- t-SNE visualization of learned embeddings, colored by community membership
-- Top 10 predicted new co-purchase links (highest-scoring non-edges), displayed as a table
+- t-SNE visualization of learned embeddings, colored by dominant community (the community with the most members in the node's membership set; nodes with no community assignment get a neutral "uncategorized" color)
+- Top 10 predicted new co-purchase links (highest-scoring non-edges), displayed as a table showing both internal node indices and original Amazon product IDs (from the nodeid file)
 - Closing markdown: one-paragraph recap of the full pipeline
 
 ## Style & Conventions
