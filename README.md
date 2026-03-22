@@ -4,7 +4,7 @@ A hands-on guide that walks you from "what is a graph?" all the way through buil
 
 ## Why Graphs?
 
-Most of the interesting data in the real world is not rows and columns -- it is **connections**. A shipping network is not a spreadsheet of deliveries; it is warehouses linked to drivers, drivers carrying packages, packages moving along routes between cities. A social network is not a user table; it is a web of friendships, interests, and interactions. Molecular structures, financial transactions, supply chains -- the pattern repeats everywhere. When the relationships between things matter as much as the things themselves, the right representation is a **graph**.
+Most data we work with lives in tables. But what about data where the **connections** matter -- not just the items, but how they relate? A warehouse connects to a driver, a driver carries a package, a package travels a route between cities. That web of relationships is a **graph**.
 
 ### A quick note on the word "graph"
 
