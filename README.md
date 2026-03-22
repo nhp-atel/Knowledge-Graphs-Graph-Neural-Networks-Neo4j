@@ -2,15 +2,21 @@
 
 A hands-on guide that walks you from "what is a graph?" all the way through building a graph database and training a neural network on it. Everything is grounded in a real-world logistics example, so the concepts stay concrete.
 
-## Introduction to graphs
+## Why Graphs?
 
-Most data we work with lives in tables -- rows and columns. But some data is better described by **connections**. Think about a shipping network: warehouses connect to drivers, drivers carry packages, packages travel along routes between cities. That web of connections is a **graph**, and there are powerful tools designed specifically to store, query, and learn from it.
+Most of the interesting data in the real world is not rows and columns -- it is **connections**. A shipping network is not a spreadsheet of deliveries; it is warehouses linked to drivers, drivers carrying packages, packages moving along routes between cities. A social network is not a user table; it is a web of friendships, interests, and interactions. Molecular structures, financial transactions, supply chains -- the pattern repeats everywhere. When the relationships between things matter as much as the things themselves, the right representation is a **graph**.
+
+**A quick note on the word "graph."** In everyday language, "graph" usually means a bar chart or line plot. In this guide, it means something different: a **network** of entities (called **nodes**) connected by relationships (called **edges**). If it helps, read "graph" as "network" throughout. The two words mean the same thing here.
 
 <p align="center">
   <img src="images/knowledge_graph.png" alt="Logistics Knowledge Graph" width="700">
 </p>
 
-This guide covers three of those tools and how they fit together. But before we explain them, let us watch a GNN solve a real problem.
+Graphs are powerful for representing data. But here is a deeper question: if a graph captures how things are connected, can a machine learning model **learn** from that structure? Can it discover patterns in the connections and predict ones that don't exist yet?
+
+> *Before continuing, think about this: you have a social network where some people are friends. Without writing any rules, could a model figure out who should be introduced to each other -- just by looking at the shape of the network?*
+
+That is exactly what a Graph Neural Network does. Watch one work:
 
 ### See It in Action: A GNN Predicting New Friendships
 
@@ -43,7 +49,11 @@ Below are the individual steps for reference:
 </p>
 </details>
 
-That is a Graph Neural Network in three steps: represent people as numbers, let information flow through the network, and measure who ends up similar. The rest of this guide applies the same idea to logistics networks, knowledge graphs, and real-world ML pipelines.
+> *Think about what just happened: the model was never told that mutual friends or shared interests matter. It discovered that structure on its own, just by passing information through the network.*
+
+That is a Graph Neural Network in three steps: represent people as numbers, let information flow through the network, and measure who ends up similar.
+
+**The gap this guide bridges.** Knowledge graphs and GNNs are almost always taught separately -- by different communities, in different courses, using different vocabulary. Knowledge graph tutorials stop at storing and querying data. GNN tutorials start with pre-processed numerical arrays and skip the question of where that data came from. The critical middle step -- taking a real graph database and converting it into the numerical format a neural network can consume -- is the part that no single resource explains well. That is what this guide exists to do, end to end, with nothing skipped.
 
 If you have worked with SQL databases or trained a neural network on tabular data, you already have enough background. This guide handles the rest.
 
