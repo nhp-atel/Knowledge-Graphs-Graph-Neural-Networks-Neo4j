@@ -6,13 +6,21 @@ A hands-on guide that walks you from "what is a graph?" all the way through buil
 
 Most of the interesting data in the real world is not rows and columns -- it is **connections**. A shipping network is not a spreadsheet of deliveries; it is warehouses linked to drivers, drivers carrying packages, packages moving along routes between cities. A social network is not a user table; it is a web of friendships, interests, and interactions. Molecular structures, financial transactions, supply chains -- the pattern repeats everywhere. When the relationships between things matter as much as the things themselves, the right representation is a **graph**.
 
-**A quick note on the word "graph."** In everyday language, "graph" usually means a bar chart or line plot. In this guide, it means something different: a **network** of entities (called **nodes**) connected by relationships (called **edges**). If it helps, read "graph" as "network" throughout. The two words mean the same thing here.
+### A quick note on the word "graph"
+
+In everyday language, "graph" usually means a bar chart or line plot. In this guide, it means something different: a **network** of entities (called **nodes**) connected by relationships (called **edges**). The image below shows the distinction. If it helps, read "graph" as "network" throughout -- the two words mean the same thing here.
+
+<p align="center">
+  <img src="images/graph_vs_plot.png" alt="A plot (line chart) versus a graph (network of connected nodes)" width="700">
+</p>
+
+Here is what a real graph looks like in a logistics context -- warehouses, drivers, packages, and the routes connecting them:
 
 <p align="center">
   <img src="images/knowledge_graph.png" alt="Logistics Knowledge Graph" width="700">
 </p>
 
-Graphs are powerful for representing data. But here is a deeper question: if a graph captures how things are connected, can a machine learning model **learn** from that structure? Can it discover patterns in the connections and predict ones that don't exist yet?
+Graphs capture how things are connected. But can a machine learning model **learn** from that structure -- discover patterns in the connections and predict ones that don't exist yet?
 
 > *Before continuing, think about this: you have a social network where some people are friends. Without writing any rules, could a model figure out who should be introduced to each other -- just by looking at the shape of the network?*
 
