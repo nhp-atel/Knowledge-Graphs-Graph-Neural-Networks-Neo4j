@@ -180,16 +180,19 @@ If the GDS plugin is not available, the notebook will still function. All graph 
 
 ## Which Notebook Should I Start With?
 
-This repository contains two notebooks. They cover overlapping material but serve different purposes.
+This repository contains three notebooks. They cover overlapping material but serve different purposes.
 
 | Notebook | What It Uses | What It Is For |
 |----------|-------------|----------------|
 | `Knowledge_Graph_GNN_Neo4j_Guide.ipynb` | NetworkX, Neo4j, PyTorch, PyTorch Geometric | The full guide: theory, tools, and implementation using standard libraries |
 | `GNN_From_Scratch.ipynb` | NumPy only (no PyTorch, no PyG) | Shows how GNNs work under the hood by implementing every operation by hand |
+| `Amazon_End_to_End_Pipeline.ipynb` | scipy, NetworkX, Neo4j, PyTorch, PyTorch Geometric | Full pipeline on real Amazon data: raw .mtx → Neo4j → GNN link prediction |
 
 **Start with the main guide.** It covers the theory, walks through Neo4j and Cypher, and builds up to GNN implementation using the tools you would actually use in production.
 
 **Then read the from-scratch notebook** when you want to understand what those tools are doing internally. It implements the same GCN architecture, the same training loop, the same link prediction pipeline -- but every weight matrix, every gradient, every optimizer update is written out explicitly in NumPy. There is no `loss.backward()`, no `GCNConv`. You see the raw matrix multiplications that make a graph neural network work.
+
+**Then try the Amazon pipeline notebook** when you want to see the full process on a real dataset. It takes the Amazon co-purchasing network, loads it into Neo4j, converts it to PyTorch Geometric format, and trains a GNN to predict which products will be co-purchased -- end to end, nothing skipped.
 
 ## Repository Structure
 
@@ -197,7 +200,9 @@ This repository contains two notebooks. They cover overlapping material but serv
 .
 ├── Knowledge_Graph_GNN_Neo4j_Guide.ipynb   # The complete guide (theory + standard libraries)
 ├── GNN_From_Scratch.ipynb                  # GNN from scratch (NumPy only, no PyTorch)
-├── README.md                                # This file
+├── Amazon_End_to_End_Pipeline.ipynb        # Real-world pipeline (Amazon data → Neo4j → GNN)
+├── data/                                   # Amazon co-purchasing dataset (SNAP)
+├── README.md                               # This file
 └── .gitignore
 ```
 
